@@ -3,6 +3,9 @@ var app = express();
 var router = express.Router();
 var path = __dirname + '/views/';
 
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+
 router.get('/', function(req, res){
 	res.sendFile(path + "index.html");
 });
@@ -20,6 +23,6 @@ app.use("/",router);
 // 	res.sendFile(path + "404.html");
 // });
 
-app.listen(3000,function(){
-	console.log("Live at Port 3000");
+app.listen(server_port, server_ip_address, function(){
+	console.log("Live at Port " + server_port + ", IP: " + server_ip_address);
 });
