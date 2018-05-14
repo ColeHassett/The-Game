@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ColeHassett/The-Game/issues"
   },
-  "homepage": "https://github.com/ColeHassett/The-Game#readme"
+  "homepage": "https://github.com/ColeHassett/The-Game#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
