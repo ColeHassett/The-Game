@@ -1,0 +1,23 @@
+html
+	head
+		title Sign Up
+		style
+			include ../public/css/style.css
+	body.login_body
+		div.login_div
+			if (message && type=="error")
+				p(style="color:red") #{message}
+			else
+				p(style="color:green") #{message}
+			h1 Sign Up
+			form(action="/", method="POST")
+				input#create_username_input(type="text" placeholder="Username" name="username" value=username)
+				br
+				input#create_password_input(type="password" placeholder="Password" name="password")
+				br
+				input#create_confirm_password_input(type="password" placeholder="Confirm Password" name="confirm_password")
+				br
+				br
+				input.login_buttons#back_to_login_button(type="submit" value="Back to Login")
+				input.login_buttons#sign_up_button(type="submit" value="Sign Up" formaction="/createaccount")
+				br

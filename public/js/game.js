@@ -16,6 +16,7 @@ var remake_board_button;
 var points_text;
 var total_trips_text;
 var notify_player_text;
+var notify_player_bonus_text;
 
 var playing = false;
 var count = 0;
@@ -40,16 +41,16 @@ function loadGame() {
 	increase_ore_button.type = "button";
 	increase_ore_button.value = "Increase Ore Chance (Cost: 50 Ore)";
 	increase_ore_button.addEventListener("click", function() {
-		if (points > 50 && ore_chance > 0.1) {
+		if (points >= 50 && ore_chance > 0.1) {
 			ore_chance -= 0.1;
 			points -= 50;
-			notify_player_text.innerHTML += "<br>Ore Spawn Chance is Now " + Math.ceil((1 - ore_chance) * 100) + "%";
+			notify_player_bonus_text.innerHTML = "Ore Spawn Chance is Now " + Math.ceil((1 - ore_chance) * 100) + "%";
 			points_text.innerHTML = "Ore: " + points;
 			createGameBoard();
 		} else if (ore_chance < 0.1) {
-			notify_player_text.innerHTML += "<br>You've Maxed the Spawn Chance!";
+			notify_player_bonus_text.innerHTML = "You've Maxed the Spawn Chance!";
 		} else {
-			notify_player_text.innerHTML += "<br>Not Enough Points";
+			notify_player_bonus_text.innerHTML = "Not Enough Points";
 		}
 	});
 
@@ -58,13 +59,13 @@ function loadGame() {
 	remake_board_button.type = "button";
 	remake_board_button.value = "Remake Board (Cost: 5 Ore)";
 	remake_board_button.addEventListener("click", function() {
-		if (points > 5) {
+		if (points >= 5) {
 			createGameBoard();
 			points -= 5;
 			points_text.innerHTML = "Ore: " + points;
 		}
 		else {
-			notify_player_text.innerHTML += "<br>Not Enough Points";
+			notify_player_bonus_text.innerHTML = "Not Enough Points";
 		}
 	});
 
@@ -85,7 +86,11 @@ function loadGame() {
 	notify_player_text = document.createElement("h1");
 	notify_player_text.innerHTML = "Click Play to Start Mining";
 
+	notify_player_bonus_text = document.createElement("h2");
+	notify_player_bonus_text.innerHTML = "";
+
 	document.body.appendChild(notify_player_text);
+	document.body.appendChild(notify_player_bonus_text);
 	document.body.appendChild(start_image);
 	document.body.appendChild(document.createElement("br"));
 	document.body.appendChild(play_button);
@@ -180,6 +185,12 @@ function createGameBoard() {
 	var container = document.createElement("div");
 	container.id = "image_grid";
 
+	var header = document.createElement("h2");
+	header.style.textDecoration = "underline";
+	header.innerHTML = "The Mines";
+	container.appendChild(document.createElement("hr"));
+	container.appendChild(header);
+
 	for (var i = 0; i < 10; i++) {
 
 		var row = document.createElement("div");
@@ -207,10 +218,5 @@ function createGameBoard() {
 		}
 		container.appendChild(row);
 	}
-	var header = document.createElement("h2");
-	header.style.textDecoration = "underline";
-	header.innerHTML = "The Mines";
-	document.body.appendChild(document.createElement("hr"));
-	document.body.appendChild(header);
 	document.body.appendChild(container);
 }

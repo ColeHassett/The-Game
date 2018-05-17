@@ -1,0 +1,22 @@
+html
+	head
+		title Login
+		style
+			include ../public/css/style.css
+	body.login_body
+		div.login_div
+			if (message && type=="error")
+				p(style="color:red") #{message}
+			else
+				p(style="color:green") #{message}
+			h1 Login
+			form(action="/", method="POST")
+				input#username_input(type="text" placeholder="Username" name="username" value=username)
+				br
+				input#password_input(type="password" placeholder="Password" name="password")
+				br
+				br
+				input.login_buttons#login_button(type="submit" value="Login" formaction="/login")
+				input.login_buttons#create_account_button(type="submit" value="Create Account" formaction="/signup")
+				br
+		
