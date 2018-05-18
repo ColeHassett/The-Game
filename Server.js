@@ -22,6 +22,7 @@ var path = __dirname + '/views/';
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var connection_string = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost:27017';
+console.log(connection_string);
 
 // Connect to mongo DB and use player collection
 mongoose.connect(connection_string+'/game-db');
@@ -38,6 +39,10 @@ var Player_Model = mongoose.model("Player", playerSchema);
 
 app.get('/', function(req, res){
 	res.render(path + "login.pug");
+});
+
+app.get('/process', function(req, res){
+	res.process(process.env);
 });
 
 // app.get('/game', function(req, res){
