@@ -21,11 +21,11 @@ var path = __dirname + '/views/';
 // Port and IP to open for connections
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-var connection_string = process.env.MONGODB_PORT || 'mongodb://localhost:27017';
+var connection_string = process.env.MONGODB_SERVICE_HOST || 'localhost';
 console.log(connection_string);
 
 // Connect to mongo DB and use player collection
-mongoose.connect(connection_string+'/game-db');
+mongoose.connect('mongodb://'+connection_string+':27017/game-db');
 var playerSchema = mongoose.Schema({
 	username: String,
 	password: String,
