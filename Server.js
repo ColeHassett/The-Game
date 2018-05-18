@@ -21,8 +21,7 @@ var path = __dirname + '/views/';
 // Port and IP to open for connections
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-var connection_string = process.env.MONGODB_SERVICE_HOST || 'localhost';
-console.log(connection_string);
+var connection_string = ('admin:'+process.env.MONGODB_ADMIN_PASSWORD+"@"+process.env.MONGODB_SERVICE_HOST) || 'localhost';
 
 // Connect to mongo DB and use player collection
 mongoose.connect('mongodb://'+connection_string+':27017/game-db');
