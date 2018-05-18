@@ -23,7 +23,8 @@ var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 
 // Connect to mongo DB and use player collection
-mongoose.connect('mongodb://localhost:27017/game-db');
+mongoose.connect('mongodb://10.129.37.124:27017/game-db');
+//mongoose.connect('mongodb://localhost:27017/game-db');
 var playerSchema = mongoose.Schema({
 	username: String,
 	password: String,
