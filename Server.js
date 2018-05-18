@@ -24,7 +24,7 @@ var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.
 var connection_string = ('admin:'+process.env.MONGODB_ADMIN_PASSWORD+"@"+process.env.MONGODB_SERVICE_HOST) || 'localhost';
 
 // Connect to mongo DB and use player collection
-mongoose.connect('mongodb://'+connection_string+':27017/game-db');
+mongoose.connect('mongodb://'+connection_string+':27017/');
 var playerSchema = mongoose.Schema({
 	username: String,
 	password: String,
