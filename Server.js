@@ -42,7 +42,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/process', function(req, res){
-	res.process(process.env);
+	res.json(process.env);
 });
 
 // app.get('/game', function(req, res){
