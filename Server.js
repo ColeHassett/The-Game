@@ -21,7 +21,7 @@ var path = __dirname + '/views/';
 // Port and IP to open for connections
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-var connection_string = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost:27017';
+var connection_string = process.env.MONGODB_PORT || 'mongodb://localhost:27017';
 console.log(connection_string);
 
 // Connect to mongo DB and use player collection
@@ -41,9 +41,9 @@ app.get('/', function(req, res){
 	res.render(path + "login.pug");
 });
 
-app.get('/process', function(req, res){
-	res.json(process.env);
-});
+// app.get('/process', function(req, res){
+// 	res.json(process.env);
+// });
 
 // app.get('/game', function(req, res){
 // 	res.render(path + "game.pug");
