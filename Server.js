@@ -21,7 +21,7 @@ var path = __dirname + '/views/';
 // Port and IP to open for connections
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-var connection_string = ('admin:'+process.env.MONGODB_ADMIN_PASSWORD+"@"+process.env.MONGODB_SERVICE_HOST) || 'localhost';
+var connection_string = process.env.USERDOMAIN != "Cactopus" ? ('admin:'+process.env.MONGODB_ADMIN_PASSWORD+"@"+process.env.MONGODB_SERVICE_HOST) : 'localhost';
 
 // Connect to mongo DB and use player collection
 mongoose.connect('mongodb://'+connection_string+':27017/');
@@ -84,7 +84,8 @@ var Player = function(id) {
 			self.x += self.speed;
 		} else if (self.moveLeft) {
 			self.x -= self.speed;
-		} else if (self.moveUp) {
+		}
+		if (self.moveUp) {
 			self.y -= self.speed;
 		} else if (self.moveDown) {
 			self.y += self.speed;
