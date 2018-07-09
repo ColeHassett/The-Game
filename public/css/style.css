@@ -5,6 +5,22 @@
 	margin: 0;
 	padding: 0;
 }
+.patch_div {
+	margin: 0% 35% 0% 35%;
+	border-radius: 5px;
+	border: 1px solid black;
+	background-color: #8cb3d9;
+	font-family: sans-serif;
+}
+
+.patch_div h1 {
+	text-align: center;
+	text-decoration: underline;
+}
+
+.patch_div li {
+	font-size: 14px;
+}
 
 .login_div {
 	text-align: center;
@@ -25,6 +41,7 @@
 
 .game_body {
 	text-align: center;
+	margin: 0;
 }
 
 #save_button {

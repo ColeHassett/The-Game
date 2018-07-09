@@ -1,11 +1,11 @@
 html
 	head
 		title The Game
-		//script(src='../public/js/game.js')
 		script(src='https://cdn.socket.io/socket.io-1.4.5.js')
+		script(src='public/packages/phaser.min.js')
 		style
 			include ../public/css/style.css
 	body.game_body
-		h3 Welcome, #{username}
-		canvas#ctx(height="500" width="500" style="border: 1px solid black")
-	script(src='public/js/play.js')
+		h1#greeting Welcome #{username}
+	//script(src='public/js/play.js')
+	script(src='public/js/game.js')

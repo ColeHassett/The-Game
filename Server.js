@@ -28,7 +28,9 @@ mongoose.connect('mongodb://'+connection_string+':27017/');
 var playerSchema = mongoose.Schema({
 	username: String,
 	password: String,
-	salt: String
+	salt: String,
+	x: Number,
+	y: Number
 });
 var Player_Model = mongoose.model("Player", playerSchema);
 
@@ -40,12 +42,16 @@ app.get('/', function(req, res){
 	res.render(path + "login.pug");
 });
 
+app.get('/patch', function(req, res) {
+	res.render(path + "patch.pug");
+});
+
 // app.get('/process', function(req, res){
 // 	res.json(process.env);
 // });
 
 // app.get('/game', function(req, res){
-// 	res.render(path + "game.pug");
+// 	res.sendFile(__dirname + "/game.html");
 // });
 
 app.get('/sprite', function(req, res){
@@ -66,18 +72,17 @@ app.use("/public", express.static(__dirname + "/public"));
 /**
  * Socket functionality
  */
-var CONNECTIONS = {};
 var Player = function(id) {
 	var self = {
-		x: 250,
-		y: 250,
+		x: 20,
+		y: 20,
 		id: id,
-		name: 'LucasPotato',
+		name: '',
 		moveRight: false,
 		moveLeft: false,
 		moveUp: false,
 		moveDown: false,
-		speed: 10
+		speed: 5
 	}
 	self.updatePosition = function() {
 		if (self.moveRight) {
@@ -98,24 +103,58 @@ Player.list = {};
 Player.onConnect = function (socket) {
 	var player = new Player(socket.id);
 
+	socket.on('setPlayerName', function(data) {
+		player.name = data.name;
+
+		// TODO: Trying to get use coordinates to set on connect and save on movement
+		// Player_Model.findOne({username: player.name}, function(err, user) {
+		// 	console.log(user);
+		// 	Player.setCoords(socket, user);
+		// });
+	});
+
 	socket.on('keypress', function(data) {
 		switch (data.direction) {
 			case 'right':
-				player.moveRight = data.state;
+				if (player.x >= (data.map_width - 36)) {
+					player.moveRight = false;
+				} else {
+					player.moveRight = data.state;
+				}
 				break;
 			case 'left':
-				player.moveLeft = data.state;
+				if (player.x <= 20) {
+					player.moveLeft = false;
+				} else {
+					player.moveLeft = data.state;
+				}
 				break;
 			case 'up':
-				player.moveUp = data.state;
+				if (player.y <= 20) {
+					player.moveUp = false;
+				} else {
+					player.moveUp = data.state;
+				}
 				break;
 			case 'down':
-				player.moveDown = data.state;
+				if (player.y >= (data.map_height - 36)) {
+					player.moveDown = false;
+				} else {
+					player.moveDown = data.state;
+				}
 				break;
 			default:
 				break;
 		}
+
+		// TODO: Update user location in DB when moving
+		// Player_Model.findOneAndUpdate({username: player.name}, {x: player.x, y: player.y}, null, function(err) {
+		//
+		// });
+
+		//socket.emit("move", player);
 	});
+
 }
 Player.onDisconnect = function (socket) {
 	delete Player.list[socket.id];
@@ -133,6 +172,17 @@ Player.update = function () {
 	}
 	return positions;
 }
+// Player.setCoords = function (socket, data) {
+// 	for (var i in Player.list) {
+// 		var player = Player.list[i];
+// 		if (player.id = socket.id) {
+// 			player.x = data.x;
+// 			player.y = data.y;
+// 		}
+// 	}
+// }
+var CONNECTIONS = {};
+var objectPositions = [];
 
 io.on('connection', function(socket) {
 	socket.id = Math.random();
@@ -143,6 +193,21 @@ io.on('connection', function(socket) {
 	socket.on("disconnect", function() {
 		delete CONNECTIONS[socket.id];
 		Player.onDisconnect(socket);
+	});
+
+	socket.on('getObjectPositions', function(data) {
+		var width = data.width;
+		var height = data.height;
+		if (objectPositions.length < 5) {
+			for (var i = objectPositions.length;  i < 5; i++) {
+				objectPositions.push({
+					x: Math.random() * width,
+					y: Math.random() * height
+				});
+			}
+		}
+
+		socket.emit('drawObjects', objectPositions);
 	});
 
 });
@@ -182,7 +247,9 @@ app.post('/createaccount', function(req, res) {
 				var new_player = new Player_Model({
 					username: player_info.username,
 					password: hash,
-					salt: salt
+					salt: salt,
+					x: 220,
+					y: 15
 				});
 
 				new_player.save(function(err, Player_Model) {
