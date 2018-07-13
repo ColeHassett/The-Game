@@ -1,6 +1,6 @@
 var socket = io();
 
-var game = new Phaser.Game(848, 640, Phaser.AUTO, 'phaser_canvas', {
+var game = new Phaser.Game(1024, 640, Phaser.AUTO, 'phaser_canvas', {
 	preload: preload,
 	create: create,
 	update: update
@@ -18,16 +18,6 @@ var player;
 var layer;
 var map;
 var username;
-
-socket.on('getPlayerNames', function(data) {
-	if (playerSprites) {
-		for (player in playerSprites) {
-
-		}
-	} else {
-		return;
-	}
-});
 
 socket.on('positions', function(data) {
 	if (playerSprites) {
