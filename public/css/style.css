@@ -61,4 +61,5 @@
 	border: 1px solid black;
 	overflow-y: scroll;
 	text-align: left;
+	margin-top: 10px;
 }
