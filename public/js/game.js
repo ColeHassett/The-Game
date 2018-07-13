@@ -9,6 +9,7 @@ var game = new Phaser.Game(848, 640, Phaser.AUTO, 'phaser_canvas', {
 var chat_box = document.getElementById("chat_box");
 var chat_form = document.getElementById("chat_form");
 var chat_input = document.getElementById("chat_input");
+var game_div = document.getElementById("phaser_canvas");
 
 var ballCount = 5;
 var playerSprites;
@@ -66,12 +67,21 @@ chat_form.onsubmit = function(e) {
 	socket.emit("sendChatMsg", chat_input.value);
 	chat_input.value = "";
 }
-// chat_form.onclick = function() {
-// 	chat_input.focus();
-// }
-// chat_box.onclick = function() {
-// 	chat_input.focus();
-// }
+game_div.onclick = function() {
+	game_div.focus();
+	game.input.enabled = true;
+	chat_box.style.opacity = "0.5";
+}
+chat_box.onclick = function() {
+	chat_input.focus();
+	game.input.enabled = false;
+	chat_box.opacity = "1";
+}
+chat_form.onclick = function() {
+	chat_input.focus();
+	game.input.enabled = false;
+	chat_box.opacity = "1";
+}
 
 socket.on('drawObjects', function(data){
 	// for (var i in data) {
@@ -150,13 +160,13 @@ function create() {
 
 function update() {
 
-	if (game.input.activePointer.withinGame) {
-		game.input.enabled = true;
-		chat_box.opacity = "0.5";
-	} else {
-		game.input.enabled = false;
-		chat_box.opacity = "1";
-	}
+	// if (game.input.activePointer.withinGame) {
+	// 	game.input.enabled = true;
+	// 	chat_box.opacity = "0.5";
+	// } else {
+	// 	game.input.enabled = false;
+	// 	chat_box.opacity = "1";
+	// }
 
 	// Move Player
 	if (this.keys.up.isDown || this.keys.W.isDown) {
