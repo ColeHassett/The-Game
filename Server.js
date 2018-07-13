@@ -113,6 +113,13 @@ Player.onConnect = function (socket) {
 		// });
 	});
 
+	socket.on('sendChatMsg', function(msg) {
+		for (var i in CONNECTIONS) {
+			var tempSocket = CONNECTIONS[i];
+			tempSocket.emit('addToChat', player.name+": "+msg);
+		}
+	});
+
 	socket.on('keypress', function(data) {
 		switch (data.direction) {
 			case 'right':

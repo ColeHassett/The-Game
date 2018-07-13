@@ -1,10 +1,14 @@
 var socket = io();
 
-var game = new Phaser.Game(848, 640, Phaser.AUTO, '', {
+var game = new Phaser.Game(848, 640, Phaser.AUTO, 'phaser_canvas', {
 	preload: preload,
 	create: create,
 	update: update
 });
+
+var chat_box = document.getElementById("chat_box");
+var chat_form = document.getElementById("chat_form");
+var chat_input = document.getElementById("chat_input");
 
 var ballCount = 5;
 var playerSprites;
@@ -50,6 +54,18 @@ socket.on('positions', function(data) {
 		}
 	}
 });
+
+socket.on('addToChat', function(data) {
+	chat_box.innerHTML += "<div>"+data+"</div>";
+	chat_box.scrollTop = chat_box.scrollHeight;
+});
+
+chat_form.onsubmit = function(e) {
+	e.preventDefault();
+
+	socket.emit("sendChatMsg", chat_input.value);
+	chat_input.value = "";
+}
 
 socket.on('drawObjects', function(data){
 	// for (var i in data) {
