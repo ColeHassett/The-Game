@@ -75,12 +75,12 @@ game_div.onclick = function() {
 chat_box.onclick = function() {
 	chat_input.focus();
 	game.input.enabled = false;
-	chat_box.opacity = "1";
+	chat_box.style.opacity = "1";
 }
 chat_form.onclick = function() {
 	chat_input.focus();
 	game.input.enabled = false;
-	chat_box.opacity = "1";
+	chat_box.style.opacity = "1";
 }
 
 socket.on('drawObjects', function(data){
