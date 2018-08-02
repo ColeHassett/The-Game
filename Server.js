@@ -67,17 +67,20 @@ app.use(body_parser.json());
 app.use(body_parser.urlencoded({extended: true}));
 app.use(upload.array());
 app.use(cookie_parser());
+app.use(session({secret: "super secret"}));
+
 app.use("/public", express.static(__dirname + "/public"));
 
 /**
  * Socket functionality
  */
-var Player = function(id) {
+var Player = function(socket_id, player_data) {
 	var self = {
-		x: 20,
-		y: 20,
-		id: id,
-		name: '',
+		x: player_data.x,
+		y: player_data.y,
+		id: player_data.id,
+		socket_id: socket_id,
+		name: player_data.username,
 		moveRight: false,
 		moveLeft: false,
 		moveUp: false,
@@ -95,23 +98,22 @@ var Player = function(id) {
 		} else if (self.moveDown) {
 			self.y += self.speed;
 		}
+
+		Player_Model.findOneAndUpdate({username: self.name}, {x: self.x, y: self.y}, {}, function(err, user) {
+			if (err) {
+				console.log(err);
+			}
+		});
 	}
-	Player.list[id] = self;
+	Player.list[socket_id] = self;
 	return self;
 }
 Player.list = {};
-Player.onConnect = function (socket) {
-	var player = new Player(socket.id);
+Player.onConnect = function (socket, player_data) {
+	
+	var player = new Player(socket.id, player_data);
+	socket.emit("displayName", {name: player.name});
 
-	socket.on('setPlayerName', function(data) {
-		player.name = data.name;
-
-		// TODO: Trying to get use coordinates to set on connect and save on movement
-		// Player_Model.findOne({username: player.name}, function(err, user) {
-		// 	console.log(user);
-		// 	Player.setCoords(socket, user);
-		// });
-	});
 
 	socket.on('sendChatMsg', function(msg) {
 		for (var i in CONNECTIONS) {
@@ -189,32 +191,17 @@ Player.update = function () {
 // 	}
 // }
 var CONNECTIONS = {};
-var objectPositions = [];
+var temp_player;
 
 io.on('connection', function(socket) {
 	socket.id = Math.random();
 	CONNECTIONS[socket.id] = socket;
 
-	Player.onConnect(socket);
+	Player.onConnect(socket, temp_player);
 
 	socket.on("disconnect", function() {
 		delete CONNECTIONS[socket.id];
 		Player.onDisconnect(socket);
-	});
-
-	socket.on('getObjectPositions', function(data) {
-		var width = data.width;
-		var height = data.height;
-		if (objectPositions.length < 5) {
-			for (var i = objectPositions.length;  i < 5; i++) {
-				objectPositions.push({
-					x: Math.random() * width,
-					y: Math.random() * height
-				});
-			}
-		}
-
-		socket.emit('drawObjects', objectPositions);
 	});
 
 });
@@ -255,8 +242,8 @@ app.post('/createaccount', function(req, res) {
 					username: player_info.username,
 					password: hash,
 					salt: salt,
-					x: 220,
-					y: 15
+					x: 20,
+					y: 20
 				});
 
 				new_player.save(function(err, Player_Model) {
@@ -289,7 +276,9 @@ app.post('/login', function(req, res) {
 			if (user) {
 				var hash = crypto.pbkdf2Sync(player_info.password, user.salt, 10000, 64, 'sha512').toString('hex');
 				if (hash == user.password) {
-					res.render(path + "game.pug", {username: user.username});
+					req.session.user = user;
+					res.redirect("/game");
+					//res.render(path + "game.pug", {username: user.username});
 				} else {
 					res.render(path + "login.pug", {message: "Invalid Password", type: "error", username: player_info.username});
 				}
@@ -299,6 +288,41 @@ app.post('/login', function(req, res) {
 		});
 	}
 });
+
+app.get('/game', function(req, res) {
+	var user = req.session.user;
+	temp_player = {
+		id: user._id,
+		username: user.username,
+		x: user.x,
+		y: user.y,
+	}
+	res.render(path+"game.pug");
+
+	// io.on('connection', function(socket) {
+	// 	socket.id = Math.random();
+	// 	CONNECTIONS[socket.id] = socket;
+	//
+	// 	Player.onConnect(socket, player_data);
+	//
+	// 	socket.on("disconnect", function() {
+	// 		delete CONNECTIONS[socket.id];
+	// 		Player.onDisconnect(socket);
+	// 	});
+	//
+	// });
+});
+
+function checkSignIn(req, res) {
+	if (req.session.user) {
+		next();
+	}
+	else {
+		var err = new Error("Not Logged in.");
+		console.log(req.sessions.user);
+		next(err);
+	}
+}
 
 app.post('/', function(req, res) {
 	res.render(path + "login.pug");

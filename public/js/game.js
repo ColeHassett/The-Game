@@ -1,5 +1,10 @@
 var socket = io();
 
+socket.on("displayName", function(data) {
+	var greeting = document.getElementById('greeting');
+	greeting.innerHTML += data.name;
+});
+
 var game = new Phaser.Game(1024, 640, Phaser.AUTO, 'phaser_canvas', {
 	preload: preload,
 	create: create,
@@ -33,7 +38,6 @@ socket.on('positions', function(data) {
 			// var name_label = game.add.text(20,20,data[i].name, {font: "200px Arial", fill:"#ffffff"});
 			// player.addChild(name_label);
 		} else {
-			socket.emit('setPlayerName', {name: username});
 			player = game.add.sprite(data[i].x, data[i].y, 'player');
 			// var name_label = game.add.text(20,20,data[i].name, {font: "200px Arial", fill:"#ffffff"});
 			// player.addChild(name_label);
@@ -105,9 +109,6 @@ function preload() {
 
 	game.load.tilemap('map', 'public/maps/map.csv', null, Phaser.Tilemap.CSV);
 
-	username = document.getElementById('greeting').innerHTML;
-	username = username.substring(7);
-
 	//game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
 }
 
@@ -142,21 +143,9 @@ function create() {
 		'P': Phaser.KeyCode.P
 	});
 
-	socket.emit('getObjectPositions', {
-		width: game.world.width,
-		height: game.world.height
-	});
 }
 
 function update() {
-
-	// if (game.input.activePointer.withinGame) {
-	// 	game.input.enabled = true;
-	// 	chat_box.opacity = "0.5";
-	// } else {
-	// 	game.input.enabled = false;
-	// 	chat_box.opacity = "1";
-	// }
 
 	// Move Player
 	if (this.keys.up.isDown || this.keys.W.isDown) {
@@ -184,11 +173,6 @@ function update() {
 	if (this.keys.right.isUp && this.keys.D.isUp) {
 		socket.emit('keypress', {direction: 'right', state: false});
 	}
-
-	// game.physics.arcade.collide(playerSprites, playerSprites, function(player1, player2) {
-	// 	console.log(player1);
-	// 	console.log(player2);
-	// }, null, this);
 
 	if (this.keys.P.justDown) {
 		console.log(game.world.width);
