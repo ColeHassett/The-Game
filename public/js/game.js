@@ -151,9 +151,8 @@ function create() {
 			var other_player = self.player_sprites.getChildAt(i);
 			for (var player in player_list) {
 				if (player_list[player].socket_id === other_player.id) {
-					other_player.reset(player_list[player].x, player_list[player].y);
-					// other_player.position.x = player_list[player].x;
-					// other_player.position.y = player_list[player].y;
+					other_player.target_x = player_list[player].x;
+					other_player.target_y = player_list[player].y;
 				}
 			}
 		}
@@ -213,18 +212,24 @@ function update() {
 		this.player.body.velocity.y = 0;
 		this.player.body.velocity.x = 0;
 
+		var did_move = false;
+
 		if (this.keys.up.isDown || this.keys.W.isDown) {
 			this.player.body.velocity.y -= 200;
-			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+			did_move = true;
 		} else if (this.keys.down.isDown || this.keys.S.isDown) {
 			this.player.body.velocity.y += 200;
-			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+			did_move = true;
 		}
 		if (this.keys.left.isDown || this.keys.A.isDown) {
 			this.player.body.velocity.x -= 200;
-			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+			did_move = true;
 		} else if (this.keys.right.isDown || this.keys.D.isDown) {
 			this.player.body.velocity.x += 200;
+			did_move = true;
+		}
+
+		if (did_move) {
 			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
 		}
 
@@ -238,6 +243,38 @@ function update() {
 		// 	x: this.player.x,
 		// 	y: this.player.y
 		// }
+	}
+
+	for (var i in this.player_sprites.getAll()) {
+		var other_player = this.player_sprites.getChildAt(i);
+		if (other_player.target_x != undefined) {
+			if (other_player.target_x !== other_player.x) {
+				if ((other_player.x + 5) > other_player.target_x) {
+					other_player.x += other_player.target_x - other_player.x;
+				} else {
+					other_player.x += 5;
+				}
+			}
+			if (other_player.target_y !== other_player.y) {
+				if ((other_player.y + 5) > other_player.target_y) {
+					other_player.y += other_player.target_y - other_player.y;
+				} else {
+					other_player.y += 5;
+				}
+			}
+			// while (other_player.target_x.toFixed(0) !== other_player.x.toFixed(0) && other_player.target_y.toFixed(0) !== other_player.y.toFixed(0)) {
+			// 	if (other_player.target_x.toFixed(0) !== other_player.x.toFixed(0)) {
+			// 		other_player.x += 1;
+			// 	}
+			// 	if (other_player.target_y.toFixed(0) !== other_player.y.toFixed(0)) {
+			// 		other_player.y += 1;
+			// 	}
+			// 	other_player.x += 1;
+			// 	other_player.y += 1;
+			// }
+			// other_player.x += (other_player.target_x - other_player.x) * 0.16;
+			// other_player.y += (other_player.target_y - other_player.y) * 0.16;
+		}
 	}
 
 	//collision

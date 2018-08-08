@@ -232,7 +232,7 @@ setInterval(function() {
 	// 	var socket = CONNECTIONS[i];
 	// 	socket.emit('positions', positions);
 	// }
-}, 1000/60);
+}, 1000/30);
 
 /**
  * POST methods
