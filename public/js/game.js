@@ -1,137 +1,116 @@
-var socket = io();
-
-socket.on("displayName", function(data) {
-	var greeting = document.getElementById('greeting');
-	greeting.innerHTML += data.name;
-});
-
 var game = new Phaser.Game(1024, 640, Phaser.AUTO, 'phaser_canvas', {
 	preload: preload,
 	create: create,
 	update: update
-});
+}, false, true, {arcade: true});
+
+// var game = new Phaser.Game(1024, 640, Phaser.AUTO, 'phaser_canvas', {
+// 	preload: preload,
+// 	create: create,
+// 	update: update
+// });
 
 var chat_box = document.getElementById("chat_box");
 var chat_form = document.getElementById("chat_form");
 var chat_input = document.getElementById("chat_input");
 var game_div = document.getElementById("phaser_canvas");
 
-var ballCount = 5;
-var playerSprites;
-var oreSprites = [];
+var ore_sprites = [];
 var player;
 var layer;
 var map;
 var username;
 
-socket.on('positions', function(data) {
-	if (playerSprites) {
-		playerSprites.killAll();
-	} else {
-		return;
-	}
+// socket.on('positions', function(data) {
+// 	if (player_sprites) {
+// 		player_sprites.killAll();
+// 	} else {
+// 		return;
+// 	}
+//
+// 	for (var i in data) {
+// 		player = player_sprites.getFirstDead();
+// 		if (player) {
+// 			player.reset(data[i].x, data[i].y);
+// 			// var name_label = game.add.text(20,20,data[i].name, {font: "200px Arial", fill:"#ffffff"});
+// 			// player.addChild(name_label);
+// 		} else {
+// 			player = game.add.sprite(data[i].x, data[i].y, 'player');
+// 			// var name_label = game.add.text(20,20,data[i].name, {font: "200px Arial", fill:"#ffffff"});
+// 			// player.addChild(name_label);
+// 			player.scale.setTo(0.13, 0.13);
+// 			game.physics.enable(player);
+// 			player.body.setSize(16 / player.scale.x, 16 / player.scale.y);
+// 			game.physics.arcade.enable(player);
+// 			player_sprites.add(player)
+// 		}
+// 	}
+// });
 
-	for (var i in data) {
-		player = playerSprites.getFirstDead();
-		if (player) {
-			player.reset(data[i].x, data[i].y);
-			// var name_label = game.add.text(20,20,data[i].name, {font: "200px Arial", fill:"#ffffff"});
-			// player.addChild(name_label);
-		} else {
-			player = game.add.sprite(data[i].x, data[i].y, 'player');
-			// var name_label = game.add.text(20,20,data[i].name, {font: "200px Arial", fill:"#ffffff"});
-			// player.addChild(name_label);
-			player.scale.setTo(0.13, 0.13);
-			game.physics.enable(player);
-			player.body.setSize(16 / player.scale.x, 16 / player.scale.y);
-			game.physics.arcade.enable(player);
-			playerSprites.add(player)
-		}
-	}
-});
-
-socket.on('addToChat', function(data) {
-	chat_box.innerHTML += "<div>"+data+"</div>";
-	chat_box.scrollTop = chat_box.scrollHeight;
-});
-
-chat_form.onsubmit = function(e) {
-	e.preventDefault();
-
-	socket.emit("sendChatMsg", chat_input.value);
-	chat_input.value = "";
-}
-game_div.onclick = function() {
-	game_div.focus();
-	game.input.enabled = true;
-	chat_box.style.opacity = "0.5";
-}
-chat_box.onclick = function() {
-	chat_input.focus();
-	game.input.enabled = false;
-	chat_box.style.opacity = "1";
-}
-chat_form.onclick = function() {
-	chat_input.focus();
-	game.input.enabled = false;
-	chat_box.style.opacity = "1";
-}
-
-socket.on('drawObjects', function(data){
-	// for (var i in data) {
-	// 	var ore = game.add.sprite(data[i].x, data[i].y, 'ore');
-	// 	game.physics.arcade.enable(ore);
-	// 	ore.maxHealth = 5;
-	// 	ore.health = 5;
-	// 	ore.inputEnabled = true;
-	// 	ore.events.onInputDown.add(function() {
-	// 		var damage = Math.floor((Math.random() * 3)) + 1;
-	// 		this.damage(damage);
-	// 		//alert("You Hit For " + damage + " Damage");
-	// 	}, ore);
-	// 	ore.events.onKilled.add(function() {
-	// 		// setInterval(function() {
-	// 		// 	console.log(ore);
-	// 		// 	ore.revive();
-	// 		// 	console.log(ore.health);
-	// 		// }, 10000)
-	// 		console.log(this);
-	// 		ore.revive();
-	// 	}, ore);
-	// 	oreSprites.push(ore);
-	// }
-});
+// socket.on('drawObjects', function(data){
+// 	// for (var i in data) {
+// 	// 	var ore = game.add.sprite(data[i].x, data[i].y, 'ore');
+// 	// 	game.physics.arcade.enable(ore);
+// 	// 	ore.maxHealth = 5;
+// 	// 	ore.health = 5;
+// 	// 	ore.inputEnabled = true;
+// 	// 	ore.events.onInputDown.add(function() {
+// 	// 		var damage = Math.floor((Math.random() * 3)) + 1;
+// 	// 		this.damage(damage);
+// 	// 		//alert("You Hit For " + damage + " Damage");
+// 	// 	}, ore);
+// 	// 	ore.events.onKilled.add(function() {
+// 	// 		// setInterval(function() {
+// 	// 		// 	console.log(ore);
+// 	// 		// 	ore.revive();
+// 	// 		// 	console.log(ore.health);
+// 	// 		// }, 10000)
+// 	// 		console.log(this);
+// 	// 		ore.revive();
+// 	// 	}, ore);
+// 	// 	ore_sprites.push(ore);
+// 	// }
+// });
 
 function preload() {
-	game.load.image('ore', 'public/images/rock.gif');
-	game.load.image('player', 'public/images/FeelsWowMan.png');
-	game.load.image('tiles', 'public/images/basictiles.png');
 
-	game.load.tilemap('map', 'public/maps/map.csv', null, Phaser.Tilemap.CSV);
+	this.load.tilemap('map', 'public/maps/thegamemap.json', null, Phaser.Tilemap.TILED_JSON);
+
+	this.load.image('ore', 'public/images/rock.gif');
+	this.load.image('player', 'public/images/FeelsWowMan.png');
+	this.load.image('tiles', 'public/images/basictiles.png');
+
+	//game.load.tilemap('map', 'public/maps/map.csv', null, Phaser.Tilemap.CSV);
 
 	//game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
 }
 
 function create() {
 
+	var self = this;
+
 	// Center game
-	game.scale.pageAlignHorizontally = true;
-	game.scale.pageAlignVertically = true;
+	this.scale.pageAlignHorizontally = true;
+	this.scale.pageAlignVertically = true;
 
-	game.stage.backgroundColor = '#87CEEB';
+	this.stage.backgroundColor = '#87CEEB';
 
-	map = game.add.tilemap('map', 16, 16);
+	// map = game.add.tilemap('map', 16, 16);
+	this.map = this.game.add.tilemap('map');
 
-	map.addTilesetImage('tiles');
+	this.map.addTilesetImage('basictiles', 'tiles');
 
-	layer = map.createLayer(0);
-	layer.resizeWorld();
+	//layer = map.createLayer(0);
+	this.base_layer = this.map.createLayer('basemap');
+	this.wall_layer = this.map.createLayer('walls');
 
-	game.physics.startSystem(Phaser.Physics.ARCADE);
+	this.map.setCollisionBetween(1, 20, true, 'walls');
 
-	playerSprites = game.add.group();
+	this.base_layer.resizeWorld();
 
-	this.keys = game.input.keyboard.addKeys({
+	//this.physics.startSystem(Phaser.Physics.ARCADE);
+
+	this.keys = this.input.keyboard.addKeys({
 		'up': 38,
 		'down': 40,
 		'left': 37,
@@ -143,41 +122,181 @@ function create() {
 		'P': Phaser.KeyCode.P
 	});
 
+	// socket work
+	this.socket = io();
+	this.player_sprites = this.add.group();
+
+	this.socket.on('displayName', function(data) {
+		var greeting = document.getElementById('greeting');
+		greeting.innerHTML += data.name;
+	});
+
+	this.socket.on('currPlayers', function(data) {
+		Object.keys(data).forEach(function(id) {
+			if (data[id].socket_id === self.socket.id) {
+				addPlayer(self, data[id]);
+			} else {
+				addOtherPlayers(self, data[id]);
+			}
+		})
+	});
+
+	this.socket.on('newPlayer', function(data) {
+		addOtherPlayers(self, data);
+	});
+
+	this.socket.on('updatePlayerLocations', function(player_list) {
+
+		for (var i in self.player_sprites.getAll()) {
+			var other_player = self.player_sprites.getChildAt(i);
+			for (var player in player_list) {
+				if (player_list[player].socket_id === other_player.id) {
+					other_player.reset(player_list[player].x, player_list[player].y);
+					// other_player.position.x = player_list[player].x;
+					// other_player.position.y = player_list[player].y;
+				}
+			}
+		}
+		// self.player_sprites.getAll().forEach(function(other_player) {
+		// 	console.log(data.socket_id);
+		// 	console.log(other_player.id);
+		// 	if (data.socket_id === other_player.id) {
+		// 		other_player.reset(data.x, data.y);
+		// 	}
+		// })
+	});
+
+	this.socket.on('disconnect', function(id) {
+		self.player_sprites.getAll().forEach(function(other_player) {
+			if (id === other_player.id) {
+				other_player.destroy();
+			}
+		});
+	});
+
+	this.socket.on('addToChat', function(data) {
+		chat_box.innerHTML += "<div>"+data+"</div>";
+		chat_box.scrollTop = chat_box.scrollHeight;
+	});
+
+	// chat functionality
+	chat_form.onsubmit = function(e) {
+		e.preventDefault();
+
+		self.socket.emit("sendChatMsg", chat_input.value);
+		chat_input.value = "";
+	}
+	game_div.onclick = function() {
+		game_div.focus();
+		game.input.enabled = true;
+		chat_box.style.opacity = "0.5";
+	}
+	chat_box.onclick = function() {
+		chat_input.focus();
+		game.input.enabled = false;
+		chat_box.style.opacity = "1";
+	}
+	chat_form.onclick = function() {
+		chat_input.focus();
+		game.input.enabled = false;
+		chat_box.style.opacity = "1";
+	}
+
 }
 
 function update() {
 
-	// Move Player
-	if (this.keys.up.isDown || this.keys.W.isDown) {
-		socket.emit('keypress', {direction: 'up', state: true, map_height: game.world.height, map_width: game.world.width});
-		//socket.emit('keypress', {direction: 'up', state: true});
-	} else if (this.keys.down.isDown || this.keys.S.isDown) {
-		socket.emit('keypress', {direction: 'down', state: true, map_height: game.world.height, map_width: game.world.width});
-	}
-	if (this.keys.left.isDown || this.keys.A.isDown) {
-		socket.emit('keypress', {direction: 'left', state: true, map_height: game.world.height, map_width: game.world.width});
-	} else if (this.keys.right.isDown || this.keys.D.isDown) {
-		socket.emit('keypress', {direction: 'right', state: true, map_height: game.world.height, map_width: game.world.width});
+	//console.log("update: "+this.player);
+
+	if (this.player) {
+
+		this.player.body.velocity.y = 0;
+		this.player.body.velocity.x = 0;
+
+		if (this.keys.up.isDown || this.keys.W.isDown) {
+			this.player.body.velocity.y -= 200;
+			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+		} else if (this.keys.down.isDown || this.keys.S.isDown) {
+			this.player.body.velocity.y += 200;
+			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+		}
+		if (this.keys.left.isDown || this.keys.A.isDown) {
+			this.player.body.velocity.x -= 200;
+			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+		} else if (this.keys.right.isDown || this.keys.D.isDown) {
+			this.player.body.velocity.x += 200;
+			this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+		}
+
+		// var x = this.player.x;
+		// var y = this.player.y;
+		// if (this.player.old_position && (x !== this.player.old_position.x || y !== this.player.old_position.y)) {
+		// 	this.socket.emit('playerMoved', {x: this.player.x, y: this.player.y});
+		// }
+		//
+		// this.player.old_position = {
+		// 	x: this.player.x,
+		// 	y: this.player.y
+		// }
 	}
 
-	// Stop Player
-	if (this.keys.up.isUp && this.keys.W.isUp) {
-		socket.emit('keypress', {direction: 'up', state: false});
-	}
-	if (this.keys.down.isUp && this.keys.S.isUp) {
-		socket.emit('keypress', {direction: 'down', state: false});
-	}
-	if (this.keys.left.isUp && this.keys.A.isUp) {
-		socket.emit('keypress', {direction: 'left', state: false});
-	}
-	if (this.keys.right.isUp && this.keys.D.isUp) {
-		socket.emit('keypress', {direction: 'right', state: false});
-	}
+	//collision
+	this.game.physics.arcade.collide(this.player, this.wall_layer);
 
-	if (this.keys.P.justDown) {
-		console.log(game.world.width);
-		console.log(game.world.height);
-		console.log(oreSprites);
-	}
+	// // Move Player
+	// if (this.keys.up.isDown || this.keys.W.isDown) {
+	// 	socket.emit('keypress', {direction: 'up', state: true, map_height: game.world.height, map_width: game.world.width});
+	// 	//socket.emit('keypress', {direction: 'up', state: true});
+	// } else if (this.keys.down.isDown || this.keys.S.isDown) {
+	// 	socket.emit('keypress', {direction: 'down', state: true, map_height: game.world.height, map_width: game.world.width});
+	// }
+	// if (this.keys.left.isDown || this.keys.A.isDown) {
+	// 	socket.emit('keypress', {direction: 'left', state: true, map_height: game.world.height, map_width: game.world.width});
+	// } else if (this.keys.right.isDown || this.keys.D.isDown) {
+	// 	socket.emit('keypress', {direction: 'right', state: true, map_height: game.world.height, map_width: game.world.width});
+	// }
+	//
+	// // Stop Player
+	// if (this.keys.up.isUp && this.keys.W.isUp) {
+	// 	socket.emit('keypress', {direction: 'up', state: false});
+	// }
+	// if (this.keys.down.isUp && this.keys.S.isUp) {
+	// 	socket.emit('keypress', {direction: 'down', state: false});
+	// }
+	// if (this.keys.left.isUp && this.keys.A.isUp) {
+	// 	socket.emit('keypress', {direction: 'left', state: false});
+	// }
+	// if (this.keys.right.isUp && this.keys.D.isUp) {
+	// 	socket.emit('keypress', {direction: 'right', state: false});
+	// }
 
+	// if (this.keys.P.justDown) {
+	// 	console.log(game.world.width);
+	// 	console.log(game.world.height);
+	// 	console.log(ore_sprites);
+	// }
+
+}
+
+function addPlayer(self, player_info) {
+	self.player = self.add.sprite(player_info.x, player_info.y, 'player');
+	self.player.scale.setTo(0.13, 0.13);
+	self.physics.arcade.enable(self.player);
+	self.player.body.setSize(16 / self.player.scale.x, 16 / self.player.scale.y);
+	self.camera.follow(self.player);
+
+	// var name_label = game.add.text(0,0,player_info.name, {font: "200px Arial", fill:"#ffffff"});
+	// self.player.addChild(name_label);
+}
+
+function addOtherPlayers(self, player_info) {
+	const other_player = self.add.sprite(player_info.x, player_info.y, 'player');
+	other_player.scale.setTo(0.13, 0.13);
+	//other_player.body.setSize(16 / other_player.scale.x, 16 / other_player.scale.y);
+	other_player.id = player_info.socket_id;
+
+	// var name_label = game.add.text(0,0,player_info.name, {font: "200px Arial", fill:"#ffffff"});
+	// other_player.addChild(name_label);
+
+	self.player_sprites.add(other_player);
 }

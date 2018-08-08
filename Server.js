@@ -74,6 +74,16 @@ app.use("/public", express.static(__dirname + "/public"));
 /**
  * Socket functionality
  */
+// Player.setCoords = function (socket, data) {
+// 	for (var i in Player.list) {
+// 		var player = Player.list[i];
+// 		if (player.id = socket.id) {
+// 			player.x = data.x;
+// 			player.y = data.y;
+// 		}
+// 	}
+// }
+
 var Player = function(socket_id, player_data) {
 	var self = {
 		x: player_data.x,
@@ -108,12 +118,14 @@ var Player = function(socket_id, player_data) {
 	Player.list[socket_id] = self;
 	return self;
 }
-Player.list = {};
 Player.onConnect = function (socket, player_data) {
-	
-	var player = new Player(socket.id, player_data);
-	socket.emit("displayName", {name: player.name});
 
+	var player = new Player(socket.id, player_data);
+	socket.emit('displayName', {name: player.name});
+
+	socket.emit('currPlayers', Player.list);
+
+	socket.broadcast.emit('newPlayer', Player.list[socket.id]);
 
 	socket.on('sendChatMsg', function(msg) {
 		for (var i in CONNECTIONS) {
@@ -122,51 +134,51 @@ Player.onConnect = function (socket, player_data) {
 		}
 	});
 
-	socket.on('keypress', function(data) {
-		switch (data.direction) {
-			case 'right':
-				if (player.x >= (data.map_width - 36)) {
-					player.moveRight = false;
-				} else {
-					player.moveRight = data.state;
-				}
-				break;
-			case 'left':
-				if (player.x <= 20) {
-					player.moveLeft = false;
-				} else {
-					player.moveLeft = data.state;
-				}
-				break;
-			case 'up':
-				if (player.y <= 20) {
-					player.moveUp = false;
-				} else {
-					player.moveUp = data.state;
-				}
-				break;
-			case 'down':
-				if (player.y >= (data.map_height - 36)) {
-					player.moveDown = false;
-				} else {
-					player.moveDown = data.state;
-				}
-				break;
-			default:
-				break;
-		}
+	socket.on('playerMoved', function(data) {
+		player.x = data.x;
+		player.y = data.y;
 
-		// TODO: Update user location in DB when moving
-		// Player_Model.findOneAndUpdate({username: player.name}, {x: player.x, y: player.y}, null, function(err) {
-		//
-		// });
+		Player_Model.findOneAndUpdate({username: player.name}, {x: player.x, y: player.y}, {}, function(err, user) {
+			if (err) {
+				console.log(err);
+			}
+		});
 
-		//socket.emit("move", player);
+		//socket.broadcast.emit('updatePlayerLocations', Player.list);
+
+		// switch (data.direction) {
+		// 	case 'right':
+		// 		if (player.x >= (data.map_width - 36)) {
+		// 			player.moveRight = false;
+		// 		} else {
+		// 			player.moveRight = data.state;
+		// 		}
+		// 		break;
+		// 	case 'left':
+		// 		if (player.x <= 20) {
+		// 			player.moveLeft = false;
+		// 		} else {
+		// 			player.moveLeft = data.state;
+		// 		}
+		// 		break;
+		// 	case 'up':
+		// 		if (player.y <= 20) {
+		// 			player.moveUp = false;
+		// 		} else {
+		// 			player.moveUp = data.state;
+		// 		}
+		// 		break;
+		// 	case 'down':
+		// 		if (player.y >= (data.map_height - 36)) {
+		// 			player.moveDown = false;
+		// 		} else {
+		// 			player.moveDown = data.state;
+		// 		}
+		// 		break;
+		// 	default:
+		// 		break;
+		// }
 	});
-
-}
-Player.onDisconnect = function (socket) {
-	delete Player.list[socket.id];
 }
 Player.update = function () {
 	var positions = [];
@@ -181,39 +193,46 @@ Player.update = function () {
 	}
 	return positions;
 }
-// Player.setCoords = function (socket, data) {
-// 	for (var i in Player.list) {
-// 		var player = Player.list[i];
-// 		if (player.id = socket.id) {
-// 			player.x = data.x;
-// 			player.y = data.y;
-// 		}
-// 	}
-// }
+
+Player.list = {};
+
 var CONNECTIONS = {};
 var temp_player;
 
 io.on('connection', function(socket) {
-	socket.id = Math.random();
+
 	CONNECTIONS[socket.id] = socket;
 
-	Player.onConnect(socket, temp_player);
+	if (temp_player) {
+		Player.onConnect(socket, temp_player);
+		console.log("Connected: "+socket.id);
+	}
 
 	socket.on("disconnect", function() {
 		delete CONNECTIONS[socket.id];
-		Player.onDisconnect(socket);
+		delete Player.list[socket.id];
+
+		console.log("Disconnected: "+socket.id);
+
+		io.emit('disconnect', socket.id);
 	});
 
 });
 
 setInterval(function() {
-	var positions = Player.update();
 
 	for (var i in CONNECTIONS) {
 		var socket = CONNECTIONS[i];
-		socket.emit('positions', positions);
+		socket.emit('updatePlayerLocations', Player.list);
 	}
-}, 1000/25);
+
+	// var positions = Player.update();
+	//
+	// for (var i in CONNECTIONS) {
+	// 	var socket = CONNECTIONS[i];
+	// 	socket.emit('positions', positions);
+	// }
+}, 1000/60);
 
 /**
  * POST methods
