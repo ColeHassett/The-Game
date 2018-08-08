@@ -215,17 +215,17 @@ function update() {
 		var did_move = false;
 
 		if (this.keys.up.isDown || this.keys.W.isDown) {
-			this.player.body.velocity.y -= 200;
+			this.player.body.velocity.y -= this.player.body.maxVelocity;
 			did_move = true;
 		} else if (this.keys.down.isDown || this.keys.S.isDown) {
-			this.player.body.velocity.y += 200;
+			this.player.body.velocity.y += this.player.body.maxVelocity;
 			did_move = true;
 		}
 		if (this.keys.left.isDown || this.keys.A.isDown) {
-			this.player.body.velocity.x -= 200;
+			this.player.body.velocity.x -= this.player.body.maxVelocity;
 			did_move = true;
 		} else if (this.keys.right.isDown || this.keys.D.isDown) {
-			this.player.body.velocity.x += 200;
+			this.player.body.velocity.x += this.player.body.maxVelocity;
 			did_move = true;
 		}
 
@@ -320,6 +320,7 @@ function addPlayer(self, player_info) {
 	self.player.scale.setTo(0.13, 0.13);
 	self.physics.arcade.enable(self.player);
 	self.player.body.setSize(16 / self.player.scale.x, 16 / self.player.scale.y);
+	self.player.body.maxVelocity = player_info.speed;
 	self.camera.follow(self.player);
 
 	// var name_label = game.add.text(0,0,player_info.name, {font: "200px Arial", fill:"#ffffff"});
@@ -329,8 +330,10 @@ function addPlayer(self, player_info) {
 function addOtherPlayers(self, player_info) {
 	const other_player = self.add.sprite(player_info.x, player_info.y, 'player');
 	other_player.scale.setTo(0.13, 0.13);
-	//other_player.body.setSize(16 / other_player.scale.x, 16 / other_player.scale.y);
+	self.physics.arcade.enable(other_player);
+	other_player.body.setSize(16 / other_player.scale.x, 16 / other_player.scale.y);
 	other_player.id = player_info.socket_id;
+	other_player.body.maxVelocity = player_info.speed;
 
 	// var name_label = game.add.text(0,0,player_info.name, {font: "200px Arial", fill:"#ffffff"});
 	// other_player.addChild(name_label);

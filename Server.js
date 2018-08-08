@@ -95,7 +95,7 @@ var Player = function(socket_id, player_data) {
 		moveLeft: false,
 		moveUp: false,
 		moveDown: false,
-		speed: 5
+		speed: 200
 	}
 	self.updatePosition = function() {
 		if (self.moveRight) {
