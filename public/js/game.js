@@ -15,7 +15,6 @@ var chat_form = document.getElementById("chat_form");
 var chat_input = document.getElementById("chat_input");
 var game_div = document.getElementById("phaser_canvas");
 
-var ore_sprites = [];
 var player;
 var layer;
 var map;
@@ -103,6 +102,31 @@ function create() {
 	//layer = map.createLayer(0);
 	this.base_layer = this.map.createLayer('basemap');
 	this.wall_layer = this.map.createLayer('walls');
+
+	this.ore_group = this.add.physicsGroup();
+	this.ore_group.inputEnableChildren = true;
+	this.trees_group = this.add.physicsGroup();
+	this.trees_group.inputEnableChildren = true;
+
+	this.map.createFromObjects('Ore', 64, 'tiles', 1, true, false, this.ore_group);
+	this.ore_group.forEach(function(ore) {
+		ore.body.immovable = true;
+	});
+	this.ore_group.onChildInputDown.add(function(sprite) {
+		checkRange(self.player, sprite);
+	},this);
+
+	this.map.createFromObjects('Trees', 39, 'tiles', 2, true, false, this.trees_group);
+	this.trees_group.forEach(function(tree) {
+		tree.body.immovable = true;
+	});
+	this.trees_group.onChildInputDown.add(function(sprite) {
+		checkRange(self.player, sprite);
+	},this);
+
+	for (var set in this.map.objects) {
+		console.log(this.map.objects[set]);
+	}
 
 	this.map.setCollisionBetween(1, 20, true, 'walls');
 
@@ -205,7 +229,7 @@ function create() {
 
 function update() {
 
-	//console.log("update: "+this.player);
+	var self = this;
 
 	if (this.player) {
 
@@ -279,6 +303,14 @@ function update() {
 
 	//collision
 	this.game.physics.arcade.collide(this.player, this.wall_layer);
+	this.game.physics.arcade.collide(this.player, this.ore_group, function (player, ore) {
+		// chat_box.innerHTML += "<div>You mine some ore.</div>";
+		// chat_box.scrollTop = chat_box.scrollHeight;
+	});
+	this.game.physics.arcade.collide(this.player, this.trees_group, function(player, tree) {
+		// chat_box.innerHTML += "<div>You chop some wood.</div>";
+		// chat_box.scrollTop = chat_box.scrollHeight;
+	});
 
 	// // Move Player
 	// if (this.keys.up.isDown || this.keys.W.isDown) {
@@ -317,6 +349,7 @@ function update() {
 
 function addPlayer(self, player_info) {
 	self.player = self.add.sprite(player_info.x, player_info.y, 'player');
+	self.player.name = player_info.name;
 	self.player.scale.setTo(0.13, 0.13);
 	self.physics.arcade.enable(self.player);
 	self.player.body.setSize(16 / self.player.scale.x, 16 / self.player.scale.y);
@@ -329,6 +362,7 @@ function addPlayer(self, player_info) {
 
 function addOtherPlayers(self, player_info) {
 	const other_player = self.add.sprite(player_info.x, player_info.y, 'player');
+	other_player.name = player_info.name;
 	other_player.scale.setTo(0.13, 0.13);
 	self.physics.arcade.enable(other_player);
 	other_player.body.setSize(16 / other_player.scale.x, 16 / other_player.scale.y);
@@ -339,4 +373,15 @@ function addOtherPlayers(self, player_info) {
 	// other_player.addChild(name_label);
 
 	self.player_sprites.add(other_player);
+}
+
+function checkRange(player, sprite) {
+	var x_distance = player.x - sprite.x;
+	var y_distance = player.y - sprite.y;
+
+	if (x_distance > -17 && x_distance < 17 && y_distance > -17 && y_distance < 17) {
+		console.log("in range");
+	} else {
+		console.log("not in range");
+	}
 }
