@@ -23,16 +23,32 @@ var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var connection_string = process.env.USERDOMAIN != "Cactopus" ? ('admin:'+process.env.MONGODB_ADMIN_PASSWORD+"@"+process.env.MONGODB_SERVICE_HOST) : 'localhost';
 
-// Connect to mongo DB and use player collection
+// Connect to mongo DB and setup collections
 mongoose.connect('mongodb://'+connection_string+':27017/');
+// Schema and model for player queries
 var playerSchema = mongoose.Schema({
 	username: String,
 	password: String,
 	salt: String,
 	x: Number,
-	y: Number
+	y: Number,
+	speed: Number,
+	inventory: Array
 });
 var Player_Model = mongoose.model("Player", playerSchema);
+// Schema and model for item queries
+var itemSchema = mongoose.Schema({
+	name: String,
+	image: String
+});
+var Item_Model = mongoose.model("Items", itemSchema);
+// Schema and model for object queries
+var objectSchema = mongoose.Schema({
+	name: String,
+	drops: Array,
+	drop_chance: Array
+});
+var Object_model = mongoose.model("Objects", objectSchema);
 
 /**
  * GET methods
@@ -95,7 +111,8 @@ var Player = function(socket_id, player_data) {
 		moveLeft: false,
 		moveUp: false,
 		moveDown: false,
-		speed: 200
+		speed: player_data.speed,
+		inventory: player_data.inventory
 	}
 	self.updatePosition = function() {
 		if (self.moveRight) {
@@ -262,7 +279,9 @@ app.post('/createaccount', function(req, res) {
 					password: hash,
 					salt: salt,
 					x: 20,
-					y: 20
+					y: 20,
+					speed: 200,
+					inventory: [3, 4]
 				});
 
 				new_player.save(function(err, Player_Model) {
@@ -315,6 +334,8 @@ app.get('/game', function(req, res) {
 		username: user.username,
 		x: user.x,
 		y: user.y,
+		speed: user.speed,
+		inventory: user.inventory
 	}
 	res.render(path+"game.pug");
 

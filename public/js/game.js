@@ -14,6 +14,7 @@ var chat_box = document.getElementById("chat_box");
 var chat_form = document.getElementById("chat_form");
 var chat_input = document.getElementById("chat_input");
 var game_div = document.getElementById("phaser_canvas");
+var inventory_box = document.getElementById("inventory_box");
 
 var player;
 var layer;
@@ -355,6 +356,8 @@ function addPlayer(self, player_info) {
 	self.player.body.setSize(16 / self.player.scale.x, 16 / self.player.scale.y);
 	self.player.body.maxVelocity = player_info.speed;
 	self.camera.follow(self.player);
+
+	inventory_box.innerHTML += player_info.inventory.toString();
 
 	// var name_label = game.add.text(0,0,player_info.name, {font: "200px Arial", fill:"#ffffff"});
 	// self.player.addChild(name_label);
