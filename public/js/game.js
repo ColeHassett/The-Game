@@ -20,6 +20,7 @@ var player;
 var layer;
 var map;
 var username;
+var inventory = [];
 
 // socket.on('positions', function(data) {
 // 	if (player_sprites) {
@@ -80,6 +81,8 @@ function preload() {
 	this.load.image('player', 'public/images/FeelsWowMan.png');
 	this.load.image('tiles', 'public/images/basictiles.png');
 
+	this.load.spritesheet('tiles_spritesheet', 'public/images/basictiles.png', 16, 16);
+
 	//game.load.tilemap('map', 'public/maps/map.csv', null, Phaser.Tilemap.CSV);
 
 	//game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
@@ -88,6 +91,7 @@ function preload() {
 function create() {
 
 	var self = this;
+	this.socket = io();
 
 	// Center game
 	this.scale.pageAlignHorizontally = true;
@@ -109,20 +113,70 @@ function create() {
 	this.trees_group = this.add.physicsGroup();
 	this.trees_group.inputEnableChildren = true;
 
-	this.map.createFromObjects('Ore', 64, 'tiles', 1, true, false, this.ore_group);
+	this.map.createFromObjects('Ore', 64, 'tiles_spritesheet', 63, true, false, this.ore_group);
 	this.ore_group.forEach(function(ore) {
 		ore.body.immovable = true;
+		ore.maxHealth = 5;
+		ore.health = 5;
+		ore.events.onKilled.add(function() {
+			addChatMessage("Obtained 1 ore.");
+			addToInventory("2", self);
+			ore.exists = true;
+			ore.tint = 0xA9A9A9;
+			setTimeout(function() {
+				ore.revive();
+				ore.tint = Phaser.Color.WHITE;
+			}, 5000);
+		}, this);
 	});
-	this.ore_group.onChildInputDown.add(function(sprite) {
-		checkRange(self.player, sprite);
+	this.ore_group.onChildInputDown.add(function(ore) {
+		if (ore.alive) {
+			var in_range = checkRange(self.player, ore);
+			if (in_range) {
+				var hit = Math.round(Math.random());
+				ore.damage(hit);
+				if (hit) {
+					addChatMessage("You chip away at the rock.");
+				}
+			} else {
+				addChatMessage("Try getting closer.");
+			}
+		} else {
+			addChatMessage("That rock looks all mined up.");
+		}
 	},this);
 
-	this.map.createFromObjects('Trees', 39, 'tiles', 2, true, false, this.trees_group);
+	this.map.createFromObjects('Trees', 39, 'tiles_spritesheet', 38, true, false, this.trees_group);
 	this.trees_group.forEach(function(tree) {
 		tree.body.immovable = true;
+		tree.maxHealth = 5;
+		tree.health = 5;
+		tree.events.onKilled.add(function() {
+			addChatMessage("Obtained 1 log.");
+			addToInventory("1", self);
+			tree.exists = true;
+			tree.tint = 0xA9A9A9;
+			setTimeout(function() {
+				tree.revive();
+				tree.tint = Phaser.Color.WHITE;
+			}, 5000);
+		}, this);
 	});
-	this.trees_group.onChildInputDown.add(function(sprite) {
-		checkRange(self.player, sprite);
+	this.trees_group.onChildInputDown.add(function(tree) {
+		if (tree.alive) {
+			var in_range = checkRange(self.player, tree);
+			if (in_range) {
+				var hit = Math.round(Math.random());
+				tree.damage(hit);
+				if (hit) {
+					addChatMessage("You chip away at the tree.");
+				}
+			} else {
+				addChatMessage("Try getting closer.");
+			}
+		} else {
+			addChatMessage("That tree looks chopped down.");
+		}
 	},this);
 
 	for (var set in this.map.objects) {
@@ -148,7 +202,6 @@ function create() {
 	});
 
 	// socket work
-	this.socket = io();
 	this.player_sprites = this.add.group();
 
 	this.socket.on('displayName', function(data) {
@@ -199,8 +252,7 @@ function create() {
 	});
 
 	this.socket.on('addToChat', function(data) {
-		chat_box.innerHTML += "<div>"+data+"</div>";
-		chat_box.scrollTop = chat_box.scrollHeight;
+		addChatMessage(data);
 	});
 
 	// chat functionality
@@ -357,7 +409,7 @@ function addPlayer(self, player_info) {
 	self.player.body.maxVelocity = player_info.speed;
 	self.camera.follow(self.player);
 
-	inventory_box.innerHTML += player_info.inventory.toString();
+	addToInventory(player_info.inventory, self);
 
 	// var name_label = game.add.text(0,0,player_info.name, {font: "200px Arial", fill:"#ffffff"});
 	// self.player.addChild(name_label);
@@ -383,8 +435,21 @@ function checkRange(player, sprite) {
 	var y_distance = player.y - sprite.y;
 
 	if (x_distance > -17 && x_distance < 17 && y_distance > -17 && y_distance < 17) {
-		console.log("in range");
+		return true;
 	} else {
-		console.log("not in range");
+		return false;
 	}
+}
+
+function addChatMessage(msg) {
+	chat_box.innerHTML += "<div>"+msg+"</div>";
+	chat_box.scrollTop = chat_box.scrollHeight;
+}
+
+function addToInventory(items, self) {
+	for (var item in items) {
+		this.inventory.push(items[item]);
+		this.inventory_box.innerHTML += " "+items[item];
+	}
+	self.socket.emit('updateInventory', this.inventory);
 }

@@ -196,6 +196,16 @@ Player.onConnect = function (socket, player_data) {
 		// 		break;
 		// }
 	});
+
+	socket.on('updateInventory', function(data) {
+		player.inventory = data;
+
+		Player_Model.findOneAndUpdate({username: player.name}, {inventory: player.inventory}, {}, function(err, user) {
+			if (err) {
+				console.log(err);
+			}
+		})
+	});
 }
 Player.update = function () {
 	var positions = [];
