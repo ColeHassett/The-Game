@@ -447,9 +447,32 @@ function addChatMessage(msg) {
 }
 
 function addToInventory(items, self) {
+
+	// 83 pickaxe
+	// 86 wood axe
+	// 42 ore
+	// 70 logs
+
 	for (var item in items) {
 		this.inventory.push(items[item]);
-		this.inventory_box.innerHTML += " "+items[item];
+		var image_tag = retrieveItemImage(items[item]);
+		this.inventory_box.innerHTML += " "+image_tag;
 	}
 	self.socket.emit('updateInventory', this.inventory);
+}
+
+function retrieveItemImage(item_id) {
+
+	switch(item_id) {
+		case "1":
+			return "<img class='log_image' src='../images/transparent.png'>";
+		case "2":
+			return "<img class='ore_image' src='../images/transparent.png'>";
+		case "3":
+			return "<img class='axe_image' src='../images/transparent.png'>";
+		case "4":
+			return "<img class='pickaxe_image' src='../images/transparent.png'>";
+		default:
+			break;
+	}
 }

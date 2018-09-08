@@ -72,3 +72,23 @@
 	position: absolute;
 	word-wrap: normal;
 }
+.log_image {
+	width: 16px;
+	height: 16px;
+	background: url(public/images/roguelikeitems.png) -32px -96px;
+}
+.ore_image {
+	width: 16px;
+	height: 16px;
+	background: url(public/images/roguelikeitems.png) -0px -64px;
+}
+.axe_image {
+	width: 16px;
+	height: 16px;
+	background: url(public/images/roguelikeitems.png) -128px -96px;
+}
+.pickaxe_image {
+	width: 16px;
+	height: 16px;
+	background: url(public/images/roguelikeitems.png) -80px -96px;
+}
