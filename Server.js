@@ -21,8 +21,9 @@ var path = __dirname + '/views/';
 // Port and IP to open for connections
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+var google_clout_user = encodeURIComponent("admin");
 var google_clout_pass = encodeURIComponent("pass1234");
-var connection_string = process.env.USERDOMAIN != "Cactopus" ? "mongodb+srv://admin:<"+google_clout_pass+">@the-game-x2kdw.gcp.mongodb.net/test?retryWrites=true"
+var connection_string = process.env.USERDOMAIN != "Cactopus" ? "mongodb+srv://"+google_clout_user+":"+google_clout_pass+"@the-game-x2kdw.gcp.mongodb.net/test?retryWrites=true"
 	: 'mongodb://localhost:27017/';
 
 // Connect to mongo DB and setup collections
