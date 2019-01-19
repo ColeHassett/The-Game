@@ -21,7 +21,7 @@ var path = __dirname + '/views/';
 // Port and IP to open for connections
 var server_port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-var connection_string = process.env.USERDOMAIN != "Cactopus" ? encodeURIComponent("mongodb://admin:<pass1234>@the-game-shard-00-00-x2kdw.gcp.mongodb.net:27017,the-game-shard-00-01-x2kdw.gcp.mongodb.net:27017,the-game-shard-00-02-x2kdw.gcp.mongodb.net:27017/test?ssl=true&replicaSet=the-game-shard-0&authSource=admin&retryWrites=true")
+var connection_string = process.env.USERDOMAIN != "Cactopus" ? "mongodb+srv://admin:<pass1234>@the-game-x2kdw.gcp.mongodb.net/test?retryWrites=true"
 	: 'mongodb://localhost:27017/';
 
 // Connect to mongo DB and setup collections
