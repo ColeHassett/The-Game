@@ -1,4 +1,4 @@
-var Player = function(socket_id, player_data) {
+var Player = function(socket_id, player_data, Player_Model) {
 	var self = {
 		x: player_data.x,
 		y: player_data.y,
@@ -36,9 +36,9 @@ var Player = function(socket_id, player_data) {
 
 Player.list = {};
 
-Player.onConnect = function (socket, player_data) {
+Player.onConnect = function (socket, player_data, Player_Model) {
 
-	var player = new Player(socket.id, player_data);
+	var player = new Player(socket.id, player_data, Player_Model);
 	socket.emit('displayName', {name: player.name});
 
 	socket.emit('currPlayers', Player.list);
@@ -46,10 +46,13 @@ Player.onConnect = function (socket, player_data) {
 	socket.broadcast.emit('newPlayer', Player.list[socket.id]);
 
 	socket.on('sendChatMsg', function(msg) {
-		for (var i in CONNECTIONS) {
-			var tempSocket = CONNECTIONS[i];
-			tempSocket.emit('addToChat', player.name+": "+msg);
-		}
+		socket.broadcast.emit('addToChat', player.name+": "+msg);
+		socket.emit('addToChat', player.name+": "+msg);
+		// for (var i in Player.list) {
+		// 	console.log(Player.list[i].name);
+		// 	var tempSocket = Player.list[i].socket_id;
+		// 	tempSocket.emit('addToChat', player.name+": "+msg);
+		// }
 	});
 
 	socket.on('playerMoved', function(data) {
@@ -122,3 +125,5 @@ Player.update = function () {
 	}
 	return positions;
 }
+
+module.exports = Player;
