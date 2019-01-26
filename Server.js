@@ -99,15 +99,6 @@ app.use("/public", express.static(__dirname + "/public"));
 /**
  * Socket functionality
  */
-// Player.setCoords = function (socket, data) {
-// 	for (var i in Player.list) {
-// 		var player = Player.list[i];
-// 		if (player.id = socket.id) {
-// 			player.x = data.x;
-// 			player.y = data.y;
-// 		}
-// 	}
-// }
 
 var CONNECTIONS = {};
 var temp_player;

@@ -48,11 +48,6 @@ Player.onConnect = function (socket, player_data, Player_Model) {
 	socket.on('sendChatMsg', function(msg) {
 		socket.broadcast.emit('addToChat', player.name+": "+msg);
 		socket.emit('addToChat', player.name+": "+msg);
-		// for (var i in Player.list) {
-		// 	console.log(Player.list[i].name);
-		// 	var tempSocket = Player.list[i].socket_id;
-		// 	tempSocket.emit('addToChat', player.name+": "+msg);
-		// }
 	});
 
 	socket.on('playerMoved', function(data) {
@@ -64,41 +59,6 @@ Player.onConnect = function (socket, player_data, Player_Model) {
 				console.log(err);
 			}
 		});
-
-		//socket.broadcast.emit('updatePlayerLocations', Player.list);
-
-		// switch (data.direction) {
-		// 	case 'right':
-		// 		if (player.x >= (data.map_width - 36)) {
-		// 			player.moveRight = false;
-		// 		} else {
-		// 			player.moveRight = data.state;
-		// 		}
-		// 		break;
-		// 	case 'left':
-		// 		if (player.x <= 20) {
-		// 			player.moveLeft = false;
-		// 		} else {
-		// 			player.moveLeft = data.state;
-		// 		}
-		// 		break;
-		// 	case 'up':
-		// 		if (player.y <= 20) {
-		// 			player.moveUp = false;
-		// 		} else {
-		// 			player.moveUp = data.state;
-		// 		}
-		// 		break;
-		// 	case 'down':
-		// 		if (player.y >= (data.map_height - 36)) {
-		// 			player.moveDown = false;
-		// 		} else {
-		// 			player.moveDown = data.state;
-		// 		}
-		// 		break;
-		// 	default:
-		// 		break;
-		// }
 	});
 
 	socket.on('updateInventory', function(data) {
