@@ -102,6 +102,7 @@ app.use("/public", express.static(__dirname + "/public"));
 
 var CONNECTIONS = {};
 var temp_player;
+var resources = {};
 
 io.on('connection', function(socket) {
 
@@ -111,6 +112,23 @@ io.on('connection', function(socket) {
 		Player.onConnect(socket, temp_player, Player_Model);
 		console.log("Connected: "+socket.id);
 	}
+
+	socket.on("createObjectsOnServer", function(obj) {
+		resources = obj;
+	});
+
+	socket.on("damageResource", function(data) {
+		resource_arr = resources[data.type];
+
+		for (var res in resource_arr) {
+			console.log("x: "+resource_arr[res].x+" y: "+resource_arr[res].y+" | x: "+data.pos.x+" y: "+data.pos.y);
+			if (resource_arr[res].x == data.pos.x && resource_arr[res].y == (data.pos.y + 16)) {
+				console.log(resource_arr[res]);
+				console.log(data.pos);
+				break;
+			}
+		}
+	});
 
 	socket.on("disconnect", function() {
 		delete CONNECTIONS[socket.id];
