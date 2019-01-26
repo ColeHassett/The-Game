@@ -15,6 +15,12 @@ var session = require('express-session');
 var serv = require('http').Server(app);
 var io = require('socket.io')(serv);
 
+// objects
+var objects_dir = __dirname + '/public/js/objects/';
+var player_object = require(objects_dir + 'player.js');
+const rock_object = require(objects_dir + 'rock.js');
+const tree_object = require(objects_dir + 'tree.js');
+
 // Path to pug views
 var path = __dirname + '/views/';
 
