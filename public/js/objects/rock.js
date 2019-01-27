@@ -2,15 +2,14 @@ var Resource = require(__dirname + '/resource.js');
 
 class Rock extends Resource {
 
-	constructor(id) {
-		super(id);
+	constructor(position) {
+		super(position);
 		this.drop_id = '2';
-	}
-
-	get drop() {
-		return this.drop_id;
+		Rock.list.push(this);
 	}
 
 };
+
+Rock.list = [];
 
 module.exports = Rock;

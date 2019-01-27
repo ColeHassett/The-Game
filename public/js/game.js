@@ -137,6 +137,7 @@ function create() {
 				ore.damage(hit);
 				if (hit) {
 					addChatMessage("You chip away at the rock.");
+					self.socket.emit("damageResource", {type:"Ore", pos: ore.position, damage: hit});
 				}
 			} else {
 				addChatMessage("Try getting closer.");
@@ -170,7 +171,6 @@ function create() {
 				tree.damage(hit);
 				if (hit) {
 					addChatMessage("You chip away at the tree.");
-					console.log(tree.position);
 					self.socket.emit("damageResource", {type:"Trees", pos: tree.position, damage: hit});
 				}
 			} else {

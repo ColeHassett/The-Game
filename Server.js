@@ -18,8 +18,9 @@ var io = require('socket.io')(serv);
 // objects
 var objects_dir = __dirname + '/public/js/objects/';
 var Player = require(objects_dir + 'player.js');
-const rock_object = require(objects_dir + 'rock.js');
-const tree_object = require(objects_dir + 'tree.js');
+var Ore = require(objects_dir + 'rock.js');
+var Tree = require(objects_dir + 'tree.js');
+var Resource = require(objects_dir + 'resource.js');
 
 // Path to pug views
 var path = __dirname + '/views/';
@@ -30,7 +31,7 @@ var server_ip_address = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.
 var mongo_user = encodeURIComponent("admin");
 var mongo_pass = encodeURIComponent("pass1234");
 var mongo_db_name = "test";
-var connection_string = "mongodb+srv://"+mongo_user+":"+mongo_pass+"@the-game-x2kdw.gcp.mongodb.net/"+mongo_db_name+"?retryWrites=true"
+var connection_string = "mongodb+srv://"+mongo_user+":"+mongo_pass+"@the-game-x2kdw.gcp.mongodb.net/"+mongo_db_name+"?retryWrites=true";
 
 // Connect to mongo DB and setup collections
 mongoose.connect(connection_string);
@@ -115,14 +116,31 @@ io.on('connection', function(socket) {
 
 	socket.on("createObjectsOnServer", function(obj) {
 		resources = obj;
+		for (var type in obj) {
+			createObjects(type, obj[type]);
+		}
 	});
 
 	socket.on("damageResource", function(data) {
-		resource_arr = resources[data.type];
+		resource_arr = [];
+		console.log(data.type);
+		// if (data.type == "Trees") {
+		// 	resource_arr = Tree.list;
+		// } else if (data.type == "Ore") {
+		// 	resource_arr = Ore.list;
+		// }
+		switch(data.type) {
+			case "Trees":
+				resource_arr = Tree.list;
+				break;
+			case "Ore":
+				resource_arr = Ore.list;
+				break;
+		}
 
 		for (var res in resource_arr) {
-			console.log("x: "+resource_arr[res].x+" y: "+resource_arr[res].y+" | x: "+data.pos.x+" y: "+data.pos.y);
-			if (resource_arr[res].x == data.pos.x && resource_arr[res].y == (data.pos.y + 16)) {
+			//console.log("x: "+resource_arr[res].position.x+" y: "+resource_arr[res].position.y+" | x: "+data.pos.x+" y: "+data.pos.y);
+			if (resource_arr[res].position.x == data.pos.x && resource_arr[res].position.y == (data.pos.y + 16)) {
 				console.log(resource_arr[res]);
 				console.log(data.pos);
 				break;
@@ -138,6 +156,22 @@ io.on('connection', function(socket) {
 
 		io.emit('disconnect', socket.id);
 	});
+
+	function createObjects(type, obj) {
+		for (var res in obj) {
+			var position = {
+				"x": obj[res].x,
+				"y": obj[res].y
+			};
+			switch (type) {
+				case "Trees":
+					new Tree(position);
+				case "Ore":
+					new Ore(position);
+			}
+		}
+
+	}
 
 });
 

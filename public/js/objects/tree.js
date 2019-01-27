@@ -1,16 +1,15 @@
-var Resource = require(__dirname + '/resource.js');
+var Resource = require('./resource.js');
 
 class Tree extends Resource {
 
-	constructor(id) {
-		super(id);
+	constructor(position) {
+		super(position);
 		this.drop_id = '1';
-	}
-
-	get drop() {
-		return this.drop_id;
+		Tree.list.push(this);
 	}
 
 };
+
+Tree.list = [];
 
 module.exports = Tree;
