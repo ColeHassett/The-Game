@@ -1,43 +1,24 @@
+const MAX_HP = 5;
+
 class Resource {
 
-	//const MAX_HP = 5;
-
-	contructor(id) {
-		this.id = id;
-		this.occupied = false;
+	constructor(position) {
 		this.health = MAX_HP;
 		this.alive = true;
-	}
-
-	get id() {
-		return this.id;
-	}
-
-	get occupied() {
-		return this.occupied;
-	}
-
-	set occupied(value) {
-		this.occupied = value;
-	}
-
-	get health() {
-		return this.health;
-	}
-
-	get alive() {
-		return this.alive;
+		this.position = position;
 	}
 
 	harvest(chance) {
-		this.occupied = true;
 		var success_check = Math.round(Math.random() + (chance/100));
 		if (success_check) {
 			if (this.health > 1) {
 				this.health -= 1;
 			} else {
 				this.alive = false;
-				this.occupied = false;
+				var self = this;
+				setTimeout(function() {
+					self.reset();
+				}, 5000);
 			}
 			return true;
 		} else {
