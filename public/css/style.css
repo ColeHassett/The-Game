@@ -61,7 +61,10 @@
 	right: 1%;
 	width: 30%;
 	height: 23%;
-	background-color: rgba(0, 0, 0, 0.05);
+	background-color: rgba(0, 0, 0, 0.1);
+	color: rgb(245, 245, 245);
+	font-family: sans-serif;
+	font-weight: 100;
 }
 #chat_box {
 	border: 1px solid black;
@@ -86,7 +89,7 @@
 	position: absolute;
 	word-wrap: normal;
 	text-align: left;
-	background-color: rgba(0, 0, 0, 0.05);
+	background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Inventory items */
