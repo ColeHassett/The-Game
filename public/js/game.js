@@ -268,6 +268,7 @@ function create() {
 	}
 	game_div.onclick = function() {
 		game_div.focus();
+		chat_input.blur();
 		game.input.enabled = true;
 		chat_box.style.opacity = "0.5";
 	}
