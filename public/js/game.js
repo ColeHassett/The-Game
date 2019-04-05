@@ -1,4 +1,4 @@
-var game = new Phaser.Game(1024, 640, Phaser.AUTO, 'phaser_canvas', {
+var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'phaser_canvas', {
 	preload: preload,
 	create: create,
 	update: update
@@ -208,10 +208,10 @@ function create() {
 	// socket work
 	this.player_sprites = this.add.group();
 
-	this.socket.on('displayName', function(data) {
-		var greeting = document.getElementById('greeting');
-		greeting.innerHTML += data.name;
-	});
+	// this.socket.on('displayName', function(data) {
+	// 	var greeting = document.getElementById('greeting');
+	// 	greeting.innerHTML += data.name;
+	// });
 
 	this.socket.on('currPlayers', function(data) {
 		Object.keys(data).forEach(function(id) {
@@ -287,6 +287,8 @@ function create() {
 function update() {
 
 	var self = this;
+
+	resizeGame();
 
 	if (this.player) {
 
@@ -479,4 +481,11 @@ function retrieveItemImage(item_id) {
 		default:
 			break;
 	}
+}
+
+function resizeGame() {
+
+	let width = window.innerWidth;
+	let height = window.innerHeight;
+	game.camera.setSize(width, height);
 }
