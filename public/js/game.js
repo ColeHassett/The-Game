@@ -75,7 +75,7 @@ var inventory = [];
 
 function preload() {
 
-	this.load.tilemap('map', 'public/maps/largemaptest.json', null, Phaser.Tilemap.TILED_JSON);
+	this.load.tilemap('map', 'public/maps/largegamemap.json', null, Phaser.Tilemap.TILED_JSON);
 
 	this.load.image('ore', 'public/images/rock.gif');
 	this.load.image('player', 'public/images/FeelsWowMan.png');
@@ -106,6 +106,7 @@ function create() {
 
 	//layer = map.createLayer(0);
 	this.base_layer = this.map.createLayer('basemap');
+	this.secondary_layer = this.map.createLayer('secondary');
 	this.wall_layer = this.map.createLayer('walls');
 
 	this.ore_group = this.add.physicsGroup();
@@ -410,7 +411,7 @@ function update() {
 function addPlayer(self, player_info) {
 	self.player = self.add.sprite(player_info.x, player_info.y, 'player');
 	self.player.name = player_info.name;
-	self.player.scale.setTo(0.4, 0.4);
+	self.player.scale.setTo(0.13, 0.13);
 	self.physics.arcade.enable(self.player);
 	self.player.body.setSize(16 / self.player.scale.x, 16 / self.player.scale.y);
 	self.player.body.maxVelocity = player_info.speed;
@@ -425,7 +426,7 @@ function addPlayer(self, player_info) {
 function addOtherPlayers(self, player_info) {
 	const other_player = self.add.sprite(player_info.x, player_info.y, 'player');
 	other_player.name = player_info.name;
-	other_player.scale.setTo(0.4, 0.4);
+	other_player.scale.setTo(0.13, 0.13);
 	self.physics.arcade.enable(other_player);
 	other_player.body.setSize(16 / other_player.scale.x, 16 / other_player.scale.y);
 	other_player.id = player_info.socket_id;
