@@ -219,7 +219,7 @@ app.post('/createaccount', function(req, res) {
 					salt: salt,
 					x: 20,
 					y: 20,
-					speed: 200,
+					speed: 400,
 					inventory: ["3", "4"]
 				});
 
