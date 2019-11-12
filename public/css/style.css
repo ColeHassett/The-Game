@@ -57,10 +57,10 @@
 /* Chat Appearance */
 #chat_container {
 	position: absolute;
-	bottom: 3%;
-	right: 1%;
+	bottom: 0;
+	right: 0;
 	width: 30%;
-	height: 23%;
+	height: 25%;
 	background-color: rgba(0, 0, 0, 0.1);
 	color: rgb(245, 245, 245);
 	font-family: sans-serif;
@@ -71,12 +71,14 @@
 	overflow-y: scroll;
 	text-align: left;
 	width: 100%;
-	height: 100%;
+	height: 91%;
 }
 #chat_input {
 	border: 1px solid black;
 	border-top: none;
 	width: 100%;
+	height: 8%;
+    bottom: 0;
 }
 
 /* Inventory Appearance */
@@ -84,8 +86,8 @@
 	border: 1px solid black;
 	height: 25%;
 	width: 30%;
-	bottom: 1%;
-	left: 1%;
+	bottom: 0;
+	left: 0;
 	position: absolute;
 	word-wrap: normal;
 	text-align: left;
