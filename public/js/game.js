@@ -172,7 +172,6 @@ function create() {
 				tree.damage(hit);
 				if (hit) {
 					addChatMessage("You chip away at the tree.");
-					self.socket.emit("damageResource", {type:"Trees", pos: tree.position, damage: hit});
 				}
 			} else {
 				addChatMessage("Try getting closer.");
@@ -185,8 +184,6 @@ function create() {
 	for (var set in this.map.objects) {
 		console.log(this.map.objects[set]);
 	}
-
-	this.socket.emit("createObjectsOnServer", this.map.objects);
 
 	this.map.setCollisionBetween(1, 20, true, 'walls');
 

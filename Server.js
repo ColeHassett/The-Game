@@ -103,7 +103,6 @@ app.use("/public", express.static(__dirname + "/public"));
 
 var CONNECTIONS = {};
 var temp_player;
-var resources = {};
 
 io.on('connection', function(socket) {
 
@@ -114,40 +113,6 @@ io.on('connection', function(socket) {
 		console.log("Connected: "+socket.id);
 	}
 
-	socket.on("createObjectsOnServer", function(obj) {
-		resources = obj;
-		for (var type in obj) {
-			createObjects(type, obj[type]);
-		}
-	});
-
-	socket.on("damageResource", function(data) {
-		resource_arr = [];
-		console.log(data.type);
-		// if (data.type == "Trees") {
-		// 	resource_arr = Tree.list;
-		// } else if (data.type == "Ore") {
-		// 	resource_arr = Ore.list;
-		// }
-		switch(data.type) {
-			case "Trees":
-				resource_arr = Tree.list;
-				break;
-			case "Ore":
-				resource_arr = Ore.list;
-				break;
-		}
-
-		for (var res in resource_arr) {
-			//console.log("x: "+resource_arr[res].position.x+" y: "+resource_arr[res].position.y+" | x: "+data.pos.x+" y: "+data.pos.y);
-			if (resource_arr[res].position.x == data.pos.x && resource_arr[res].position.y == (data.pos.y + 16)) {
-				console.log(resource_arr[res]);
-				console.log(data.pos);
-				break;
-			}
-		}
-	});
-
 	socket.on("disconnect", function() {
 		delete CONNECTIONS[socket.id];
 		delete Player.list[socket.id];
@@ -156,22 +121,6 @@ io.on('connection', function(socket) {
 
 		io.emit('disconnect', socket.id);
 	});
-
-	function createObjects(type, obj) {
-		for (var res in obj) {
-			var position = {
-				"x": obj[res].x,
-				"y": obj[res].y
-			};
-			switch (type) {
-				case "Trees":
-					new Tree(position);
-				case "Ore":
-					new Ore(position);
-			}
-		}
-
-	}
 
 });
 
