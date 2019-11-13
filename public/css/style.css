@@ -42,6 +42,7 @@
 .game_body {
 	text-align: center;
 	margin: 0;
+	overflow: hidden;
 }
 
 #save_button {
@@ -52,25 +53,53 @@
 	font-size: 20px;
 	font-weight: bold;
 }
-.chat {
-	width: 500px;
-	margin: 0 auto;
+
+/* Chat Appearance */
+#chat_container {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 30%;
+	height: 25%;
+	background-color: rgba(0, 0, 0, 0.1);
+	color: rgb(245, 245, 245);
+	font-family: sans-serif;
+	font-weight: 100;
 }
 #chat_box {
-	height: 100px;
 	border: 1px solid black;
 	overflow-y: scroll;
 	text-align: left;
-	margin-top: 10px;
+	width: 100%;
+	height: 91%;
 }
-#inventory_box {
-	float: left;
+#chat_input {
 	border: 1px solid black;
-	height: 400px;
-	width: 250px;
-	margin: 5% 0 0 5%;
+	border-top: none;
+	width: 100%;
+	height: 8%;
+    bottom: 0;
+}
+
+/* Inventory Appearance */
+#inventory_box {
+	border: 1px solid black;
+	height: 25%;
+	width: 30%;
+	bottom: 0;
+	left: 0;
 	position: absolute;
 	word-wrap: normal;
+	text-align: left;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Inventory items */
+#inventory_box img:first-child {
+	margin: 1% 0.25% 0.25% 1%;
+}
+#inventory_box img {
+	margin: 0.25%;
 }
 .log_image {
 	width: 16px;

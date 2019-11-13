@@ -1,4 +1,4 @@
-var game = new Phaser.Game(1024, 640, Phaser.AUTO, 'phaser_canvas', {
+var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'phaser_canvas', {
 	preload: preload,
 	create: create,
 	update: update
@@ -75,7 +75,7 @@ var inventory = [];
 
 function preload() {
 
-	this.load.tilemap('map', 'public/maps/thegamemap.json', null, Phaser.Tilemap.TILED_JSON);
+	this.load.tilemap('map', 'public/maps/largegamemap.json', null, Phaser.Tilemap.TILED_JSON);
 
 	this.load.image('ore', 'public/images/rock.gif');
 	this.load.image('player', 'public/images/FeelsWowMan.png');
@@ -106,6 +106,7 @@ function create() {
 
 	//layer = map.createLayer(0);
 	this.base_layer = this.map.createLayer('basemap');
+	this.secondary_layer = this.map.createLayer('secondary');
 	this.wall_layer = this.map.createLayer('walls');
 
 	this.ore_group = this.add.physicsGroup();
@@ -137,6 +138,7 @@ function create() {
 				ore.damage(hit);
 				if (hit) {
 					addChatMessage("You chip away at the rock.");
+					self.socket.emit("damageResource", {type:"Ore", pos: ore.position, damage: hit});
 				}
 			} else {
 				addChatMessage("Try getting closer.");
@@ -204,10 +206,10 @@ function create() {
 	// socket work
 	this.player_sprites = this.add.group();
 
-	this.socket.on('displayName', function(data) {
-		var greeting = document.getElementById('greeting');
-		greeting.innerHTML += data.name;
-	});
+	// this.socket.on('displayName', function(data) {
+	// 	var greeting = document.getElementById('greeting');
+	// 	greeting.innerHTML += data.name;
+	// });
 
 	this.socket.on('currPlayers', function(data) {
 		Object.keys(data).forEach(function(id) {
@@ -264,6 +266,7 @@ function create() {
 	}
 	game_div.onclick = function() {
 		game_div.focus();
+		chat_input.blur();
 		game.input.enabled = true;
 		chat_box.style.opacity = "0.5";
 	}
@@ -283,6 +286,8 @@ function create() {
 function update() {
 
 	var self = this;
+
+	resizeGame();
 
 	if (this.player) {
 
@@ -475,4 +480,11 @@ function retrieveItemImage(item_id) {
 		default:
 			break;
 	}
+}
+
+function resizeGame() {
+
+	let width = window.innerWidth;
+	let height = window.innerHeight;
+	game.camera.setSize(width, height);
 }
