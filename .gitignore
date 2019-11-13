@@ -56,5 +56,9 @@ typings/
 # dotenv environment variables file
 .env
 
-node_modules/*
-.DS_Store
+# node modules
+node_modules/
+
+# visual studio files
+.vs/
+.vscode/
