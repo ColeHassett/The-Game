@@ -62,3 +62,4 @@ node_modules/
 # visual studio files
 .vs/
 .vscode/
+.DS_Store
