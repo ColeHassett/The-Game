@@ -21,6 +21,11 @@ var Player = require(objects_dir + 'player.js');
 var Ore = require(objects_dir + 'rock.js');
 var Tree = require(objects_dir + 'tree.js');
 var Resource = require(objects_dir + 'resource.js');
+// Map
+let Map = require(objects_dir + 'map.js');
+let map_json = require(__dirname + '/public/maps/largegamemap.json');
+Map = new Map(map_json);
+Map.init();
 
 // Path to pug views
 var path = __dirname + '/views/';
